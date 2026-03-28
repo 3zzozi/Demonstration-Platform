@@ -68,7 +68,7 @@ export default function ProfilePage() {
       const token = getToken()
 
       if (!token) {
-        setError('No token found. Please log in first.')
+        setError('You are not authorized to view this page')
         setIsLoading(false)
         return
       }
@@ -114,47 +114,24 @@ export default function ProfilePage() {
     setUseManualToken(true)
   }
 
-  // If no token available, show manual token entry form
-  if (!getToken() && !useManualToken && !error) {
+  // If no token available, show unauthorized error
+  if (!localStorage.getItem('access_token') && !error) {
     return (
       <main>
         <div className="card">
           <div className="card-header">
-            <h1 className="card-title">Access Protected Data</h1>
-            <p className="card-subtitle">Enter a stolen token to demonstrate token replay attack</p>
+            <h1 className="card-title">Access Denied</h1>
+            <p className="card-subtitle">You are not authorized to view this page</p>
           </div>
 
-          <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
-            <strong>Token Replay Attack Demo:</strong><br />
-            This simulates an attacker who has obtained a stolen token
-            (e.g., via XSS attack, localStorage theft, or MITM attack).
+          <div className="alert alert-danger">
+            <strong>401 Unauthorized</strong><br />
+            Valid access token is required to view this resource.
           </div>
-
-          <form onSubmit={handleManualTokenSubmit}>
-            <div className="form-group">
-              <label htmlFor="manualToken" className="form-label">
-                Access Token
-              </label>
-              <input
-                type="text"
-                id="manualToken"
-                className="form-input"
-                value={manualToken}
-                onChange={(e) => setManualToken(e.target.value)}
-                placeholder="Enter access token..."
-                required
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary">
-              Access Profile
-            </button>
-          </form>
 
           <button
             onClick={() => router.push('/login')}
             className="btn btn-primary"
-            style={{ marginTop: '1rem' }}
           >
             Go to Login
           </button>
