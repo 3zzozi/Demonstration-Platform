@@ -17,8 +17,10 @@ import time
 import json
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes to allow frontend access
 
 # =============================================================================
 # IN-MEMORY TOKEN STORE (EDUCATIONAL ONLY - NOT SECURE)
