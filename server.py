@@ -239,6 +239,11 @@ def health_check():
 # =============================================================================
 
 if __name__ == "__main__":
+    import os
+    
+    # Port configuration - can be overridden via environment variable
+    PORT = int(os.environ.get("PORT", 5001))
+    
     print("\n" + "=" * 60)
     print("DEMONSTRATION PLATFORM - BACKEND SERVER")
     print("=" * 60)
@@ -248,6 +253,7 @@ if __name__ == "__main__":
     print("  POST /login   - Authenticate and receive access token")
     print("  GET  /profile - Access protected data (requires token)")
     print("  GET  /health  - Health check")
+    print(f"\nServer running on: http://localhost:{PORT}")
     print("\nDemo Credentials:")
     print("  Username: student")
     print("  Password: 1234")
@@ -256,4 +262,4 @@ if __name__ == "__main__":
     print("Do not use any patterns from this demo in production.\n")
     print("=" * 60 + "\n")
     
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=PORT, debug=True)

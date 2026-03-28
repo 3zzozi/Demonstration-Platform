@@ -14,7 +14,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-const API_BASE = 'http://localhost:5000'
+const API_BASE = 'http://localhost:5001'
 
 interface ProfileData {
   username: string

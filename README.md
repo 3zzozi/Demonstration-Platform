@@ -78,7 +78,7 @@ pip install flask
 python server.py
 ```
 
-The server will start at `http://localhost:5000`
+The server will start at `http://localhost:5001` (if port 5000 is in use, it defaults to 5001)
 
 ### Step 2: Start the Frontend (Next.js)
 
