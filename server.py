@@ -222,11 +222,7 @@ def get_profile():
             "expires_at": datetime.fromtimestamp(tokens[token]["expires_at"]).isoformat(),
             "expires_in_seconds": remaining_seconds,
             "token_prefix": token[:8] + "..." + token[-8:]
-        },
-        "security_notice": "This endpoint returns sensitive data. In a real system, "
-                          "the token would be validated against a secure token store.",
-        "attack_scenario": "If you accessed this page using a token from leaked_token.txt, "
-                          "you just demonstrated a TOKEN REPLAY ATTACK!"
+        }
     }), 200
 
 

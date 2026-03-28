@@ -133,7 +133,7 @@ export default function ProfilePage() {
           <form onSubmit={handleManualTokenSubmit}>
             <div className="form-group">
               <label htmlFor="manualToken" className="form-label">
-                Stolen Access Token
+                Access Token
               </label>
               <input
                 type="text"
@@ -141,21 +141,15 @@ export default function ProfilePage() {
                 className="form-input"
                 value={manualToken}
                 onChange={(e) => setManualToken(e.target.value)}
-                placeholder="Paste stolen token here..."
+                placeholder="Enter access token..."
                 required
               />
             </div>
 
             <button type="submit" className="btn btn-primary">
-              Access Protected Data
+              Access Profile
             </button>
           </form>
-
-          <div className="demo-notice">
-            <p className="demo-notice-text">
-              To get a token: Log in normally, then check leaked_token.txt
-            </p>
-          </div>
 
           <button
             onClick={() => router.push('/login')}
@@ -164,13 +158,6 @@ export default function ProfilePage() {
           >
             Go to Login
           </button>
-        </div>
-
-        <div className="alert alert-info" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-          <strong>How to get a stolen token:</strong><br />
-          1. Log in as student/1234<br />
-          2. Check the Flask server terminal for leaked_token.txt location<br />
-          3. Copy the token and paste it above
         </div>
       </main>
     )
@@ -273,38 +260,41 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Warning Box - Security Education */}
-        <div className="warning-box">
-          <div className="warning-title">
-            <span>⚠️</span>
-            <span>Security Warning - Token Theft Demo</span>
+        {/* User Settings Section */}
+        <div className="data-section">
+          <div className="data-title">User Settings</div>
+          <div className="data-item">
+            <span className="data-key">Theme</span>
+            <span className="data-value">Dark Mode</span>
           </div>
-          <div className="warning-content">
-            <p>
-              <strong>What just happened?</strong><br />
-              You successfully accessed protected data using an access token.
-              This is how OAuth-based authentication works in real applications.
-            </p>
-            <p>
-              <strong>Token Theft Risk:</strong><br />
-              If an attacker obtained this token (e.g., via XSS, MITM attack,
-              or insecure storage like localStorage), they could access this
-              data WITHOUT knowing your username or password.
-              This is called a <em>Token Replay Attack</em>.
-            </p>
-            <p>
-              <strong>How tokens are stolen in the real world:</strong><br />
-              • XSS (Cross-Site Scripting) attacks read localStorage<br />
-              • Man-in-the-Middle attacks on HTTP (no TLS)<br />
-              • Malicious browser extensions<br />
-              • CSRF attacks that capture tokens<br />
-              • Log files containing tokens in URLs
-            </p>
-            <p style={{ color: 'var(--error)', marginTop: '0.5rem' }}>
-              <strong>Demo Note:</strong> The token you used was "leaked" to
-              <code>leaked_token.txt</code> during login. In a real attack,
-              the attacker would use stolen tokens from localStorage or intercept them.
-            </p>
+          <div className="data-item">
+            <span className="data-key">Language</span>
+            <span className="data-value">English (US)</span>
+          </div>
+          <div className="data-item">
+            <span className="data-key">Timezone</span>
+            <span className="data-value">UTC+3</span>
+          </div>
+          <div className="data-item">
+            <span className="data-key">2FA Enabled</span>
+            <span className="data-value" style={{ color: 'var(--success)' }}>✓ Yes</span>
+          </div>
+        </div>
+
+        {/* Recent Activity Section */}
+        <div className="data-section">
+          <div className="data-title">Recent Activity</div>
+          <div className="data-item">
+            <span className="data-key">Last Login</span>
+            <span className="data-value">Today, 22:30 UTC</span>
+          </div>
+          <div className="data-item">
+            <span className="data-key">IP Address</span>
+            <span className="data-value">192.168.1.xxx</span>
+          </div>
+          <div className="data-item">
+            <span className="data-key">Active Sessions</span>
+            <span className="data-value">2 devices</span>
           </div>
         </div>
 
@@ -312,7 +302,7 @@ export default function ProfilePage() {
         <button
           onClick={handleLogout}
           className="btn btn-primary"
-          style={{ marginTop: '1.5rem' }}
+          style={{ marginTop: '1rem' }}
         >
           Logout
         </button>
