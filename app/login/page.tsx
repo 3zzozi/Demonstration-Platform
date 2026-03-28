@@ -132,22 +132,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="demo-notice">
-          <p className="demo-notice-text">
-            Demo only. No real accounts are used.
-          </p>
-        </div>
-      </div>
-
-      <div className="alert alert-info" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-        <strong>Demo Credentials:</strong><br />
-        Username: <code>student</code> | Password: <code>1234</code>
-      </div>
-
-      <div className="alert alert-warning" style={{ marginTop: '1rem', textAlign: 'center' }}>
-        <strong>⚠️ Security Note:</strong><br />
-        After login, open Dev Tools (F12) → Application → Local Storage<br />
-        You will see the token stored there (simulating how XSS attacks steal tokens!)
       </div>
     </main>
   )
