@@ -56,12 +56,19 @@ export default function LoginPage() {
       }
 
       const loginData = data as LoginResponse
-      console.log('[DEMO] Login successful, received access token')
-      console.log('[DEMO] Token has been saved to leaked_token.txt on the server')
-      console.log('[DEMO] In a real attack, this token could be stolen and reused!')
       
-      // Redirect to profile page with the token
-      router.push(`/profile?token=${loginData.access_token}`)
+      // Store token in localStorage (simulating OAuth token storage)
+      // In real OAuth, tokens are stored securely (httpOnly cookies, encrypted storage, etc.)
+      localStorage.setItem('access_token', loginData.access_token)
+      localStorage.setItem('token_expiry', String(loginData.expires_in))
+      
+      console.log('[DEMO] Login successful!')
+      console.log('[DEMO] Token stored in localStorage')
+      console.log('[DEMO] Token saved to leaked_token.txt on server (simulating theft)')
+      console.log('[DEMO] In real apps, tokens in localStorage can be stolen via XSS!')
+      
+      // Redirect to profile page
+      router.push('/profile')
     } catch (err) {
       console.error('[DEMO] Network error:', err)
       setError('Unable to connect to the server. Is the Flask backend running?')
@@ -135,6 +142,12 @@ export default function LoginPage() {
       <div className="alert alert-info" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
         <strong>Demo Credentials:</strong><br />
         Username: <code>student</code> | Password: <code>1234</code>
+      </div>
+
+      <div className="alert alert-warning" style={{ marginTop: '1rem', textAlign: 'center' }}>
+        <strong>⚠️ Security Note:</strong><br />
+        After login, open Dev Tools (F12) → Application → Local Storage<br />
+        You will see the token stored there (simulating how XSS attacks steal tokens!)
       </div>
     </main>
   )

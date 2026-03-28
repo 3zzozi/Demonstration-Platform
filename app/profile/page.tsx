@@ -7,12 +7,16 @@
  * 1. How a valid access token grants access to protected resources
  * 2. What happens when a token expires
  * 3. The importance of keeping tokens secure
+ * 
+ * TOKEN THEFT SCENARIO:
+ * - Tokens stored in localStorage can be stolen via XSS attacks
+ * - An attacker could use the stolen token to access protected resources
  */
 
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const API_BASE = 'http://localhost:5002'
 
@@ -42,24 +46,33 @@ interface ProfileError {
   message: string
 }
 
-function ProfileContent() {
-  const searchParams = useSearchParams()
+export default function ProfilePage() {
   const router = useRouter()
-  const token = searchParams.get('token')
-
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [countdown, setCountdown] = useState(0)
+  const [manualToken, setManualToken] = useState('')
+  const [useManualToken, setUseManualToken] = useState(false)
+
+  // Get token from localStorage (set during login)
+  const getToken = () => {
+    if (useManualToken && manualToken) {
+      return manualToken
+    }
+    return localStorage.getItem('access_token')
+  }
 
   useEffect(() => {
-    if (!token) {
-      setError('No token provided. Please log in first.')
-      setIsLoading(false)
-      return
-    }
-
     const fetchProfile = async () => {
+      const token = getToken()
+
+      if (!token) {
+        setError('No token found. Please log in first.')
+        setIsLoading(false)
+        return
+      }
+
       try {
         // Send request with token in Authorization header
         const response = await fetch(`${API_BASE}/profile`, {
@@ -87,7 +100,7 @@ function ProfileContent() {
     }
 
     fetchProfile()
-  }, [token])
+  }, [useManualToken, manualToken])
 
   // Countdown timer
   useEffect(() => {
@@ -108,20 +121,75 @@ function ProfileContent() {
   }, [countdown, profileData])
 
   const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('token_expiry')
     router.push('/login')
   }
 
-  if (!token) {
+  const handleManualTokenSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError('')
+    setUseManualToken(true)
+  }
+
+  // If no token available, show manual token entry form
+  if (!getToken() && !useManualToken && !error) {
     return (
       <main>
         <div className="card">
-          <div className="error-state">
-            <h2 className="error-title">Authentication Required</h2>
-            <p className="error-message">{error || 'No token found in URL'}</p>
-            <button onClick={handleLogout} className="btn btn-primary">
-              Go to Login
-            </button>
+          <div className="card-header">
+            <h1 className="card-title">Access Protected Data</h1>
+            <p className="card-subtitle">Enter a stolen token to demonstrate token replay attack</p>
           </div>
+
+          <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
+            <strong>Token Replay Attack Demo:</strong><br />
+            This simulates an attacker who has obtained a stolen token
+            (e.g., via XSS attack, localStorage theft, or MITM attack).
+          </div>
+
+          <form onSubmit={handleManualTokenSubmit}>
+            <div className="form-group">
+              <label htmlFor="manualToken" className="form-label">
+                Stolen Access Token
+              </label>
+              <input
+                type="text"
+                id="manualToken"
+                className="form-input"
+                value={manualToken}
+                onChange={(e) => setManualToken(e.target.value)}
+                placeholder="Paste stolen token here..."
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary">
+              Access Protected Data
+            </button>
+          </form>
+
+          <div className="demo-notice">
+            <p className="demo-notice-text">
+              To get a token: Log in normally, then check leaked_token.txt
+            </p>
+          </div>
+
+          <button
+            onClick={() => router.push('/login')}
+            className="btn btn-primary"
+            style={{ marginTop: '1rem' }}
+          >
+            Go to Login
+          </button>
+        </div>
+
+        <div className="alert alert-info" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <strong>How to get a stolen token:</strong><br />
+          1. Log in as student/1234<br />
+          2. Check the Flask server terminal for leaked_token.txt location<br />
+          3. Copy the token and paste it above
         </div>
       </main>
     )
@@ -226,9 +294,6 @@ function ProfileContent() {
             <span className="data-key">Expires At</span>
             <span className="data-value">{new Date(profileData.token_info.expires_at).toLocaleString()}</span>
           </div>
-          <div className="token-preview">
-            Full token: {token?.slice(0, 20)}...{token?.slice(-20)}
-          </div>
         </div>
 
         {/* Warning Box - Security Education */}
@@ -246,28 +311,24 @@ function ProfileContent() {
             <p>
               <strong>Token Theft Risk:</strong><br />
               If an attacker obtained this token (e.g., via XSS, MITM attack,
-              or insecure storage), they could access this data WITHOUT knowing
-              your username or password. This is called a <em>Token Replay Attack</em>.
+              or insecure storage like localStorage), they could access this
+              data WITHOUT knowing your username or password.
+              This is called a <em>Token Replay Attack</em>.
             </p>
             <p>
-              <strong>Mitigation in Production:</strong><br />
-              • Use short-lived tokens (like this 60-second demo)<br />
-              • Implement token rotation with refresh tokens<br />
-              • Store tokens securely (httpOnly cookies, encrypted storage)<br />
-              • Use TLS/HTTPS to prevent interception<br />
-              • Implement token binding to devices
+              <strong>How tokens are stolen in the real world:</strong><br />
+              • XSS (Cross-Site Scripting) attacks read localStorage<br />
+              • Man-in-the-Middle attacks on HTTP (no TLS)<br />
+              • Malicious browser extensions<br />
+              • CSRF attacks that capture tokens<br />
+              • Log files containing tokens in URLs
             </p>
             <p style={{ color: 'var(--error)', marginTop: '0.5rem' }}>
-              <strong>Demo Note:</strong> Check the <code>leaked_token.txt</code> file on the
-              Flask server. It contains the token that was "stolen" during login!
+              <strong>Demo Note:</strong> The token you used was "leaked" to
+              <code>leaked_token.txt</code> during login. In a real attack,
+              the attacker would use stolen tokens from localStorage or intercept them.
             </p>
           </div>
-        </div>
-
-        {/* Attack Scenario Notice */}
-        <div className="alert alert-warning" style={{ marginTop: '1.5rem' }}>
-          <strong>Token Replay Attack Scenario:</strong><br />
-          {profileData.attack_scenario}
         </div>
 
         {/* Logout Button */}
@@ -280,22 +341,5 @@ function ProfileContent() {
         </button>
       </div>
     </main>
-  )
-}
-
-// Wrap with Suspense for useSearchParams
-export default function ProfilePage() {
-  return (
-    <Suspense fallback={
-      <main>
-        <div className="card">
-          <div className="loading">
-            <div className="loading-spinner"></div>
-          </div>
-        </div>
-      </main>
-    }>
-      <ProfileContent />
-    </Suspense>
   )
 }
