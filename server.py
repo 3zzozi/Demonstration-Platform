@@ -44,7 +44,7 @@ DEMO_CREDENTIALS = {
     "student": "1234"  # Username: student, Password: 1234
 }
 
-TOKEN_EXPIRY_SECONDS = 180  # Tokens expire after 3 minutes
+TOKEN_EXPIRY_SECONDS = 1800  # Tokens expire after 30 minutes
 
 
 def generate_token():

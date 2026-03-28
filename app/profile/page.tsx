@@ -51,7 +51,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
-  const [countdown, setCountdown] = useState(0)
+
   const [manualToken, setManualToken] = useState('')
   const [useManualToken, setUseManualToken] = useState(false)
 
@@ -90,7 +90,6 @@ export default function ProfilePage() {
         }
 
         setProfileData(data as ProfileData)
-        setCountdown((data as ProfileData).token_info.expires_in_seconds)
         setIsLoading(false)
       } catch (err) {
         console.error('[DEMO] Network error:', err)
@@ -101,24 +100,6 @@ export default function ProfilePage() {
 
     fetchProfile()
   }, [useManualToken, manualToken])
-
-  // Countdown timer
-  useEffect(() => {
-    if (countdown <= 0 || !profileData) return
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          setError('Token has expired. Please log in again.')
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [countdown, profileData])
 
   const handleLogout = () => {
     localStorage.removeItem('access_token')
@@ -237,11 +218,7 @@ export default function ProfilePage() {
           <p className="profile-role">Role: {profileData.role}</p>
         </div>
 
-        {/* Token Expiry Countdown */}
-        <div className="countdown">
-          <div className="countdown-number">{countdown}s</div>
-          <div className="countdown-label">Token Expires In</div>
-        </div>
+
 
         {/* Protected Data Section */}
         <div className="data-section">
