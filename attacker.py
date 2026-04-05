@@ -8,7 +8,7 @@ def get_stolen_token():
         with open("leaked_token.txt", "r") as f:
             content = f.read()
     except FileNotFoundError:
-        print("Error: leaked_token.txt not found. Login first.")
+        print("Error: leaked_token.txt not fou. Login first.")
         return
 
     token = None
